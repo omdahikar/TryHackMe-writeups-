@@ -1,0 +1,35 @@
+First use wireshark to open .pcap file then 
+Find http protocol and use tcp stream follow 
+And download steam data with raw format and file name would be stream.raw
+Use python code to extract the images from stream.raw file in stream.py
+
+
+
+import re
+
+def extract_jpegs(raw_file, output_dir):
+ with open(raw_file, 'rb') as f:
+ data = f.read()
+ # Split by boundary
+ parts = data.split(b'--BoundaryString')
+ for i, part in enumerate(parts):
+ if b'JFIF' in part: # Check for JPEG data
+ # Extract JPEG content after headers
+ jpeg_start = part.find(b'\xFF\xD8')
+ jpeg_end = part.rfind(b'\xFF\xD9') + 2
+ if jpeg_start != -1 and jpeg_end != -1:
+ jpeg_data = part[jpeg_start:jpeg_end]
+ with open(f'{output_dir}/frame_{i}.jpg', 'wb') as img:
+ img.write(jpeg_data)
+
+extract_jpegs('stream.raw', 'frames')
+
+From <https://blog.devops.dev/security-footage-ctf-tryhackme-writeup-a5563889036b> 
+
+
+
+Mkdir frames
+
+Use the above code 
+Python3 stream.py 
+
