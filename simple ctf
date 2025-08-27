@@ -1,0 +1,26 @@
+first we enumerate all the sites
+with dirbuster,dirb, gobuster and
+then we see the vuln site, file, and find out username and passwd
+then we use that to enter in ftp or ssh
+if we get ftp we again find user and passwd for ssh 
+after getting ssh user and passwd we will see user.txt or s2cr3t files and enumerate all the users and passwds then 
+we use sudo -l to see if can escalate for the root 
+we get the nopasswd in it and we will search for /usr/bin/vim etc can be there then we will search on google for exploit related it and then get the root access and then enumerate all the files and find the passwd and user
+
+
+
+here i learned syntax
+python exploit.py -u http://<ip>/<page> --crack -w /usr/share/worlists/rockyou.txt
+
+Escalation
+We can see that are we user or root? By command "id" on terminal
+sudo -l
+got the nopasswd on /usr/bin/vim
+found vuln on GTFOBins website that 
+for reverse shell we can do for post exploitation
+
+
+
+GTFOBins website have all the exploits related to escalation of /usr/bin/<any>
+
+
